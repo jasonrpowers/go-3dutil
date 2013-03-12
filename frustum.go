@@ -4,13 +4,23 @@ import (
 	"math"
 
 	unum "github.com/metaleap/go-util/num"
+	ustr "github.com/metaleap/go-util/str"
 )
 
+type FrustumCoords struct {
+	unum.Vec2
+	C, TL, TR, BL, BR unum.Vec3
+
+	x, y unum.Vec3
+}
+
 type Frustum struct {
-	Planes [6]unum.Vec3
-	Axes   struct {
+	Bounding Bounds
+	Planes   [6]FrustumPlane
+	Axes     struct {
 		X, Y, Z unum.Vec3
 	}
+	Near, Far FrustumCoords
 
 	sphereFactor                              unum.Vec2
 	aspectRatio, tanRadHalf, tanRadHalfAspect float64
@@ -68,7 +78,18 @@ func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64
 	return
 }
 
-func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3) {
+func (me *Frustum) String() string {
+	var buf ustr.Buffer
+	buf.Writeln("Left\t%s", me.Planes[0].String())
+	buf.Writeln("Right\t%s", me.Planes[1].String())
+	buf.Writeln("Bottom\t%s", me.Planes[2].String())
+	buf.Writeln("Top\t%s", me.Planes[3].String())
+	buf.Writeln("Near\t%s", me.Planes[4].String())
+	buf.Writeln("Far\t%s", me.Planes[5].String())
+	return buf.String()
+}
+
+func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3) {
 	me.Axes.Z = *dir
 	me.Axes.Z.Negate()
 	me.Axes.X.SetFrom(upVector)
@@ -79,12 +100,91 @@ func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3) {
 	} else {
 		me.Axes.Y = *upAxis
 	}
+
+	me.Near.C.SetFromSubScaled(pos, &me.Axes.Z, persp.ZNear)
+	me.Far.C.SetFromSubScaled(pos, &me.Axes.Z, persp.ZFar)
+	me.Near.y.SetFromScaled(&me.Axes.Y, me.Near.Y)
+	me.Far.y.SetFromScaled(&me.Axes.Y, me.Far.Y)
+	me.Near.x.SetFromScaled(&me.Axes.X, me.Near.X)
+	me.Far.x.SetFromScaled(&me.Axes.X, me.Far.X)
+
+	// ntl = nc + ny - nx
+	me.Near.TL.SetFromAddSub(&me.Near.C, &me.Near.y, &me.Near.x)
+	// ntr = nc + ny + nx
+	me.Near.TR.SetFromAddAdd(&me.Near.C, &me.Near.y, &me.Near.x)
+	// nbl = nc - ny - nx
+	me.Near.BL.SetFromSubSub(&me.Near.C, &me.Near.y, &me.Near.x)
+	// nbr = nc - ny + nx
+	me.Near.BR.SetFromSubAdd(&me.Near.C, &me.Near.y, &me.Near.x)
+	// ftl = fc + fy - fx
+	me.Far.TL.SetFromAddSub(&me.Far.C, &me.Far.y, &me.Far.x)
+	// fbr = fc - fy + fx
+	me.Far.BR.SetFromSubAdd(&me.Far.C, &me.Far.y, &me.Far.x)
+	// ftr = fc + fy + fx
+	me.Far.TR.SetFromAddAdd(&me.Far.C, &me.Far.y, &me.Far.x)
+	// fbl = fc - fy - fx
+	me.Far.BL.SetFromSubSub(&me.Far.C, &me.Far.y, &me.Far.x)
 }
 
-func (me *Frustum) UpdateRatio(fovYRadHalf, aspectRatio float64) {
+//	Gribb/Hartmann: "Fast Extraction of Viewing Frustum Planes from the WorldView-Projection Matrix"
+func (me *Frustum) nopeUpdatePlanes(mat *unum.Mat4, normalize bool) {
+	// Left clipping plane
+	me.Planes[0].X = mat[12] + mat[0]
+	me.Planes[0].Y = mat[13] + mat[1]
+	me.Planes[0].Z = mat[14] + mat[2]
+	me.Planes[0].W = mat[15] + mat[3]
+	// Right clipping plane	
+	me.Planes[1].X = mat[12] - mat[0]
+	me.Planes[1].Y = mat[13] - mat[1]
+	me.Planes[1].Z = mat[14] - mat[2]
+	me.Planes[1].W = mat[15] - mat[3]
+	// Bottom clipping plane
+	me.Planes[2].X = mat[12] + mat[4]
+	me.Planes[2].Y = mat[13] + mat[5]
+	me.Planes[2].Z = mat[14] + mat[6]
+	me.Planes[2].W = mat[15] + mat[7]
+	// Top clipping plane
+	me.Planes[3].X = mat[12] - mat[4]
+	me.Planes[3].Y = mat[13] - mat[5]
+	me.Planes[3].Z = mat[14] - mat[6]
+	me.Planes[3].W = mat[15] - mat[7]
+	// Near clipping plane
+	me.Planes[4].X = mat[12] + mat[8]
+	me.Planes[4].Y = mat[13] + mat[9]
+	me.Planes[4].Z = mat[14] + mat[10]
+	me.Planes[4].W = mat[15] + mat[11]
+	// Far clipping plane
+	me.Planes[5].X = mat[12] - mat[8]
+	me.Planes[5].Y = mat[13] - mat[9]
+	me.Planes[5].Z = mat[14] - mat[10]
+	me.Planes[5].W = mat[15] - mat[11]
+	if normalize {
+		for i := 0; i < len(me.Planes); i++ {
+			me.Planes[i].Normalize()
+		}
+	}
+}
+
+func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64) {
 	me.aspectRatio = aspectRatio
-	me.tanRadHalf = math.Tan(fovYRadHalf)
+	me.tanRadHalf = math.Tan(persp.FovY.RadHalf)
 	me.tanRadHalfAspect = me.tanRadHalf * aspectRatio
-	me.sphereFactor.Y = 1 / math.Cos(fovYRadHalf)
+	me.sphereFactor.Y = 1 / math.Cos(persp.FovY.RadHalf)
 	me.sphereFactor.X = 1 / math.Cos(math.Atan(me.tanRadHalfAspect))
+	me.Near.Y = persp.ZNear * me.tanRadHalf
+	me.Near.X = me.Near.Y * aspectRatio
+	me.Far.Y = persp.ZFar * me.tanRadHalf
+	me.Far.X = me.Far.Y * aspectRatio
+}
+
+type FrustumPlane struct {
+	unum.Vec4
+}
+
+func (me *FrustumPlane) DistanceTo(point *unum.Vec3) float64 {
+	return me.Vec3.Dot(point) + me.W
+}
+
+func (me *FrustumPlane) Normalize() {
+	me.NormalizeFrom(me.Vec3.Magnitude())
 }
