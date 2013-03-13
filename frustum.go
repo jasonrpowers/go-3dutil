@@ -4,7 +4,6 @@ import (
 	"math"
 
 	unum "github.com/metaleap/go-util/num"
-	ustr "github.com/metaleap/go-util/str"
 )
 
 type FrustumCoords struct {
@@ -76,17 +75,6 @@ func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64
 	}
 	fullyInside = !intersect
 	return
-}
-
-func (me *Frustum) String() string {
-	var buf ustr.Buffer
-	buf.Writeln("Left\t%s", me.Planes[0].String())
-	buf.Writeln("Right\t%s", me.Planes[1].String())
-	buf.Writeln("Bottom\t%s", me.Planes[2].String())
-	buf.Writeln("Top\t%s", me.Planes[3].String())
-	buf.Writeln("Near\t%s", me.Planes[4].String())
-	buf.Writeln("Far\t%s", me.Planes[5].String())
-	return buf.String()
 }
 
 func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3) {

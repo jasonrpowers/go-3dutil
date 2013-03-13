@@ -111,10 +111,7 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 					<dd>&nbsp; &nbsp; <a href="#Frustum.HasSphere">func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64) (fullyInside, intersect bool)</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Frustum.String">func (me *Frustum) String() string</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateCoords">func (me *Frustum) UpdateCoords(pos, dir, upVector, upAxis *unum.Vec3, persp *Perspective)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateCoords">func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateRatio">func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64)</a></dd>
@@ -352,7 +349,7 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 		
 			
 			
-			<h2 id="Frustum">type <a href="/target/frustum.go?s=202:440#L7">Frustum</a></h2>
+			<h2 id="Frustum">type <a href="/target/frustum.go?s=162:400#L6">Frustum</a></h2>
 			<pre>type Frustum struct {
     Bounding Bounds
     Planes   [6]FrustumPlane
@@ -374,35 +371,28 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 
 			
 				
-				<h3 id="Frustum.HasPoint">func (*Frustum) <a href="/target/frustum.go?s=442:518#L19">HasPoint</a></h3>
+				<h3 id="Frustum.HasPoint">func (*Frustum) <a href="/target/frustum.go?s=402:478#L18">HasPoint</a></h3>
 				<pre>func (me *Frustum) HasPoint(pos, point *unum.Vec3, zNear, zFar float64) bool</pre>
 				
 				
 				
 			
 				
-				<h3 id="Frustum.HasSphere">func (*Frustum) <a href="/target/frustum.go?s=947:1058#L36">HasSphere</a></h3>
+				<h3 id="Frustum.HasSphere">func (*Frustum) <a href="/target/frustum.go?s=907:1018#L35">HasSphere</a></h3>
 				<pre>func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64) (fullyInside, intersect bool)</pre>
 				
 				
 				
 			
 				
-				<h3 id="Frustum.String">func (*Frustum) <a href="/target/frustum.go?s=1823:1857#L71">String</a></h3>
-				<pre>func (me *Frustum) String() string</pre>
+				<h3 id="Frustum.UpdateCoords">func (*Frustum) <a href="/target/frustum.go?s=1783:1873#L70">UpdateCoords</a></h3>
+				<pre>func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</pre>
 				
 				
 				
 			
 				
-				<h3 id="Frustum.UpdateCoords">func (*Frustum) <a href="/target/frustum.go?s=2194:2284#L82">UpdateCoords</a></h3>
-				<pre>func (me *Frustum) UpdateCoords(pos, dir, upVector, upAxis *unum.Vec3, persp *Perspective)</pre>
-				
-				
-				
-			
-				
-				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=4744:4815#L158">UpdateRatio</a></h3>
+				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=4333:4404#L146">UpdateRatio</a></h3>
 				<pre>func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64)</pre>
 				
 				
@@ -411,7 +401,7 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 		
 			
 			
-			<h2 id="FrustumCoords">type <a href="/target/frustum.go?s=114:200#L1">FrustumCoords</a></h2>
+			<h2 id="FrustumCoords">type <a href="/target/frustum.go?s=74:160#L1">FrustumCoords</a></h2>
 			<pre>type FrustumCoords struct {
     unum.Vec2
     C, TL, TR, BL, BR unum.Vec3
@@ -431,7 +421,7 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 		
 			
 			
-			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=5220:5259#L170">FrustumPlane</a></h2>
+			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=4809:4848#L158">FrustumPlane</a></h2>
 			<pre>type FrustumPlane struct {
     unum.Vec4
 }</pre>
@@ -447,14 +437,14 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 
 			
 				
-				<h3 id="FrustumPlane.DistanceTo">func (*FrustumPlane) <a href="/target/frustum.go?s=5261:5321#L174">DistanceTo</a></h3>
+				<h3 id="FrustumPlane.DistanceTo">func (*FrustumPlane) <a href="/target/frustum.go?s=4850:4910#L162">DistanceTo</a></h3>
 				<pre>func (me *FrustumPlane) DistanceTo(point *unum.Vec3) float64</pre>
 				
 				
 				
 			
 				
-				<h3 id="FrustumPlane.Normalize">func (*FrustumPlane) <a href="/target/frustum.go?s=5361:5396#L178">Normalize</a></h3>
+				<h3 id="FrustumPlane.Normalize">func (*FrustumPlane) <a href="/target/frustum.go?s=4950:4985#L166">Normalize</a></h3>
 				<pre>func (me *FrustumPlane) Normalize()</pre>
 				
 				
