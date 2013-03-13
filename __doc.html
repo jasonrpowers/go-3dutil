@@ -126,12 +126,6 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 				<dd><a href="#FrustumPlane">type FrustumPlane</a></dd>
 				
 				
-					
-					<dd>&nbsp; &nbsp; <a href="#FrustumPlane.DistanceTo">func (me *FrustumPlane) DistanceTo(point *unum.Vec3) float64</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="#FrustumPlane.Normalize">func (me *FrustumPlane) Normalize()</a></dd>
-				
 			
 				
 				<dd><a href="#MeshDescF3">type MeshDescF3</a></dd>
@@ -392,7 +386,7 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 				
 			
 				
-				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=4333:4404#L146">UpdateRatio</a></h3>
+				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=3458:3529#L115">UpdateRatio</a></h3>
 				<pre>func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64)</pre>
 				
 				
@@ -421,9 +415,10 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 		
 			
 			
-			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=4809:4848#L158">FrustumPlane</a></h2>
+			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=3934:3996#L127">FrustumPlane</a></h2>
 			<pre>type FrustumPlane struct {
-    unum.Vec4
+    Normal unum.Vec3
+    D      float64
 }</pre>
 			
 
@@ -435,20 +430,6 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 
 			
 
-			
-				
-				<h3 id="FrustumPlane.DistanceTo">func (*FrustumPlane) <a href="/target/frustum.go?s=4850:4910#L162">DistanceTo</a></h3>
-				<pre>func (me *FrustumPlane) DistanceTo(point *unum.Vec3) float64</pre>
-				
-				
-				
-			
-				
-				<h3 id="FrustumPlane.Normalize">func (*FrustumPlane) <a href="/target/frustum.go?s=4950:4985#L166">Normalize</a></h3>
-				<pre>func (me *FrustumPlane) Normalize()</pre>
-				
-				
-				
 			
 		
 			
