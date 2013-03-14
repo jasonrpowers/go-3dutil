@@ -77,7 +77,7 @@ func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64
 	return
 }
 
-func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3) {
+func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3) {
 	me.Axes.Z = *dir
 	me.Axes.Z.Negate()
 	me.Axes.X.SetFrom(upVector)
@@ -88,7 +88,15 @@ func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *
 	} else {
 		me.Axes.Y = *upAxis
 	}
+}
 
+func (me *Frustum) UpdateAxesCoordsPlanes(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3) {
+	me.UpdateAxes(dir, upVector, upAxis)
+	me.UpdateCoords(persp, pos)
+	me.UpdatePlanes()
+}
+
+func (me *Frustum) UpdateCoords(persp *Perspective, pos *unum.Vec3) {
 	me.Near.C.SetFromSubScaled(pos, &me.Axes.Z, persp.ZNear)
 	me.Far.C.SetFromSubScaled(pos, &me.Axes.Z, persp.ZFar)
 	me.Near.y.SetFromScaled(&me.Axes.Y, me.Near.Y)
@@ -112,7 +120,9 @@ func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *
 	me.Far.TR.SetFromAddAdd(&me.Far.C, &me.Far.y, &me.Far.x)
 	// fbl = fc - fy - fx
 	me.Far.BL.SetFromSubSub(&me.Far.C, &me.Far.y, &me.Far.x)
+}
 
+func (me *Frustum) UpdatePlanes() {
 	//	left
 	me.Planes[0].setFrom(&me.Near.TL, &me.Near.BL, &me.Far.BL)
 	//	right
@@ -125,6 +135,45 @@ func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *
 	me.Planes[4].setFrom(&me.Near.TL, &me.Near.TR, &me.Near.BR)
 	//	far
 	me.Planes[5].setFrom(&me.Far.TR, &me.Far.TL, &me.Far.BL)
+}
+
+//	Gribb/Hartmann: "Fast Extraction of Viewing Frustum Planes from the WorldView-Projection Matrix"
+func (me *Frustum) UpdatePlanesGH(mat *unum.Mat4, normalize bool) {
+	// Left clipping plane
+	me.Planes[0].X = mat[12] + mat[0]
+	me.Planes[0].Y = mat[13] + mat[1]
+	me.Planes[0].Z = mat[14] + mat[2]
+	me.Planes[0].W = mat[15] + mat[3]
+	// Right clipping plane	
+	me.Planes[1].X = mat[12] - mat[0]
+	me.Planes[1].Y = mat[13] - mat[1]
+	me.Planes[1].Z = mat[14] - mat[2]
+	me.Planes[1].W = mat[15] - mat[3]
+	// Bottom clipping plane
+	me.Planes[2].X = mat[12] + mat[4]
+	me.Planes[2].Y = mat[13] + mat[5]
+	me.Planes[2].Z = mat[14] + mat[6]
+	me.Planes[2].W = mat[15] + mat[7]
+	// Top clipping plane
+	me.Planes[3].X = mat[12] - mat[4]
+	me.Planes[3].Y = mat[13] - mat[5]
+	me.Planes[3].Z = mat[14] - mat[6]
+	me.Planes[3].W = mat[15] - mat[7]
+	// Near clipping plane
+	me.Planes[4].X = mat[12] + mat[8]
+	me.Planes[4].Y = mat[13] + mat[9]
+	me.Planes[4].Z = mat[14] + mat[10]
+	me.Planes[4].W = mat[15] + mat[11]
+	// Far clipping plane
+	me.Planes[5].X = mat[12] - mat[8]
+	me.Planes[5].Y = mat[13] - mat[9]
+	me.Planes[5].Z = mat[14] - mat[10]
+	me.Planes[5].W = mat[15] - mat[11]
+	if normalize {
+		for i := 0; i < len(me.Planes); i++ {
+			me.Planes[i].Normalize()
+		}
+	}
 }
 
 func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64) {
@@ -140,12 +189,15 @@ func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64) {
 }
 
 type FrustumPlane struct {
-	Normal unum.Vec3
-	D      float64
+	unum.Vec4
 }
 
 func (me *FrustumPlane) setFrom(p1, p2, p3 *unum.Vec3) {
-	me.Normal.SetFromCrossOf(p3.Sub(p2), p1.Sub(p2))
-	me.Normal.Normalize()
-	me.D = -me.Normal.Dot(p2)
+	me.Vec3.SetFromCrossOf(p3.Sub(p2), p1.Sub(p2))
+	me.Vec3.Normalize()
+	me.W = -me.Vec3.Dot(p2)
+}
+
+func (me *FrustumPlane) Normalize() {
+	me.NormalizeFrom(me.Vec3.Magnitude())
 }

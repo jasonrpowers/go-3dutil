@@ -111,7 +111,19 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 					<dd>&nbsp; &nbsp; <a href="#Frustum.HasSphere">func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64) (fullyInside, intersect bool)</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateCoords">func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateAxes">func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateAxesCoordsPlanes">func (me *Frustum) UpdateAxesCoordsPlanes(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateCoords">func (me *Frustum) UpdateCoords(persp *Perspective, pos *unum.Vec3)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdatePlanes">func (me *Frustum) UpdatePlanes()</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdatePlanesGH">func (me *Frustum) UpdatePlanesGH(mat *unum.Mat4, normalize bool)</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Frustum.UpdateRatio">func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64)</a></dd>
@@ -125,6 +137,9 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 				
 				<dd><a href="#FrustumPlane">type FrustumPlane</a></dd>
 				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FrustumPlane.Normalize">func (me *FrustumPlane) Normalize()</a></dd>
 				
 			
 				
@@ -379,14 +394,45 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 				
 			
 				
-				<h3 id="Frustum.UpdateCoords">func (*Frustum) <a href="/target/frustum.go?s=1783:1873#L70">UpdateCoords</a></h3>
-				<pre>func (me *Frustum) UpdateCoords(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</pre>
+				<h3 id="Frustum.UpdateAxes">func (*Frustum) <a href="/target/frustum.go?s=1783:1846#L70">UpdateAxes</a></h3>
+				<pre>func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3)</pre>
 				
 				
 				
 			
 				
-				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=3458:3529#L115">UpdateRatio</a></h3>
+				<h3 id="Frustum.UpdateAxesCoordsPlanes">func (*Frustum) <a href="/target/frustum.go?s=2084:2184#L83">UpdateAxesCoordsPlanes</a></h3>
+				<pre>func (me *Frustum) UpdateAxesCoordsPlanes(persp *Perspective, pos, dir, upVector, upAxis *unum.Vec3)</pre>
+				
+				
+				
+			
+				
+				<h3 id="Frustum.UpdateCoords">func (*Frustum) <a href="/target/frustum.go?s=2276:2343#L89">UpdateCoords</a></h3>
+				<pre>func (me *Frustum) UpdateCoords(persp *Perspective, pos *unum.Vec3)</pre>
+				
+				
+				
+			
+				
+				<h3 id="Frustum.UpdatePlanes">func (*Frustum) <a href="/target/frustum.go?s=3316:3349#L115">UpdatePlanes</a></h3>
+				<pre>func (me *Frustum) UpdatePlanes()</pre>
+				
+				
+				
+			
+				
+				<h3 id="Frustum.UpdatePlanesGH">func (*Frustum) <a href="/target/frustum.go?s=3869:3934#L131">UpdatePlanesGH</a></h3>
+				<pre>func (me *Frustum) UpdatePlanesGH(mat *unum.Mat4, normalize bool)</pre>
+				<p>
+Gribb/Hartmann: &#34;Fast Extraction of Viewing Frustum Planes from the WorldView-Projection Matrix&#34;
+</p>
+
+				
+				
+			
+				
+				<h3 id="Frustum.UpdateRatio">func (*Frustum) <a href="/target/frustum.go?s=5021:5092#L169">UpdateRatio</a></h3>
 				<pre>func (me *Frustum) UpdateRatio(persp *Perspective, aspectRatio float64)</pre>
 				
 				
@@ -415,10 +461,9 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 		
 			
 			
-			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=3934:3996#L127">FrustumPlane</a></h2>
+			<h2 id="FrustumPlane">type <a href="/target/frustum.go?s=5497:5536#L181">FrustumPlane</a></h2>
 			<pre>type FrustumPlane struct {
-    Normal unum.Vec3
-    D      float64
+    unum.Vec4
 }</pre>
 			
 
@@ -430,6 +475,13 @@ Spatial data types &amp; helpers for use in 3D apps (AABB, Frustum etc.)
 
 			
 
+			
+				
+				<h3 id="FrustumPlane.Normalize">func (*FrustumPlane) <a href="/target/frustum.go?s=5692:5727#L191">Normalize</a></h3>
+				<pre>func (me *FrustumPlane) Normalize()</pre>
+				
+				
+				
 			
 		
 			
