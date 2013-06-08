@@ -45,7 +45,7 @@ func (me *AaBb) Transform(mat *unum.Mat4) {
 }
 
 func (me *AaBb) UpdateMinMax(vec *unum.Vec3) {
-	vec.SetMinMax(&me.Min, &me.Max)
+	vec.Clamp(&me.Min, &me.Max)
 }
 
 func (me *AaBb) UpdateMinMaxFrom(aabb *AaBb) {
