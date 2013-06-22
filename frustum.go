@@ -80,7 +80,7 @@ func (me *Frustum) HasSphere(pos, center *unum.Vec3, radius, zNear, zFar float64
 func (me *Frustum) UpdateAxes(dir, upVector, upAxis *unum.Vec3) {
 	me.Axes.Z = *dir
 	me.Axes.Z.Negate()
-	me.Axes.X.SetFrom(upVector)
+	me.Axes.X = *upVector
 	me.Axes.X.SetFromCross(&me.Axes.Z)
 	me.Axes.X.Normalize()
 	if upAxis == nil {
