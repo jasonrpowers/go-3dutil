@@ -3,7 +3,7 @@ package u3d
 import (
 	"math"
 
-	unum "github.com/metaleap/go-util/num"
+	"github.com/go-utils/unum"
 )
 
 type FrustumCoords struct {
@@ -144,7 +144,7 @@ func (me *Frustum) UpdatePlanesGH(mat *unum.Mat4, normalize bool) {
 	me.Planes[0].Y = mat[13] + mat[1]
 	me.Planes[0].Z = mat[14] + mat[2]
 	me.Planes[0].W = mat[15] + mat[3]
-	// Right clipping plane	
+	// Right clipping plane
 	me.Planes[1].X = mat[12] - mat[0]
 	me.Planes[1].Y = mat[13] - mat[1]
 	me.Planes[1].Z = mat[14] - mat[2]

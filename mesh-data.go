@@ -3,7 +3,7 @@ package u3d
 import (
 	"strings"
 
-	unum "github.com/metaleap/go-util/num"
+	"github.com/go-utils/unum"
 )
 
 type MeshFaceBase struct {

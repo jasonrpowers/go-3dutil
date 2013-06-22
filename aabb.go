@@ -3,7 +3,7 @@ package u3d
 import (
 	"math"
 
-	unum "github.com/metaleap/go-util/num"
+	"github.com/go-utils/unum"
 )
 
 type AaBb struct {
