@@ -196,7 +196,7 @@ func (me *FrustumPlane) setFrom(p1, p2, p3 *unum.Vec3) {
 	var v3 unum.Vec3
 	v3.SetFromCrossOf(p3.Sub(p2), p1.Sub(p2))
 	v3.Normalize()
-	me.Set3(&v3)
+	me.SetFromVec3(&v3)
 	me.W = -v3.Dot(p2)
 }
 
