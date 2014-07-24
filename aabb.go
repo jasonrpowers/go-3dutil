@@ -11,7 +11,7 @@ type AaBb struct {
 }
 
 func (me *AaBb) BoundingSphere(center *unum.Vec3) (radius float64) {
-	return math.Max(me.Min.DistanceFrom(center), me.Max.DistanceFrom(center))
+	return math.Max(me.Min.Distance(center), me.Max.Distance(center))
 }
 
 func (me *AaBb) Clear() {

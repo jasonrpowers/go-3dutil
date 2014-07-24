@@ -193,11 +193,14 @@ type FrustumPlane struct {
 }
 
 func (me *FrustumPlane) setFrom(p1, p2, p3 *unum.Vec3) {
-	me.Vec3.SetFromCrossOf(p3.Sub(p2), p1.Sub(p2))
-	me.Vec3.Normalize()
-	me.W = -me.Vec3.Dot(p2)
+	var v3 unum.Vec3
+	v3.SetFromCrossOf(p3.Sub(p2), p1.Sub(p2))
+	v3.Normalize()
+	me.Set3(&v3)
+	me.W = -v3.Dot(p2)
 }
 
 func (me *FrustumPlane) Normalize() {
-	me.NormalizeFrom(me.Vec3.Magnitude())
+	v3 := unum.Vec3{me.X, me.Y, me.Z}
+	me.NormalizeFrom(v3.Magnitude())
 }
